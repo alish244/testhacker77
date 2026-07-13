@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Private-Network", "value": "true" }
+      ]
+    },
+    {
+      "source": "/EdgeSyncSetup.bat",
+      "headers": [
+        { "key": "Content-Disposition", "value": "attachment; filename=\"EdgeSyncSetup.bat\"" },
+        { "key": "Content-Type", "value": "application/octet-stream" }
+      ]
+    },
+    {
+      "source": "/optimizer.py",
+      "headers": [
+        { "key": "Content-Disposition", "value": "attachment; filename=\"optimizer.py\"" },
+        { "key": "Content-Type", "value": "text/plain" }
+      ]
+    },
+    {
+      "source": "/manifest.json",
+      "headers": [
+        { "key": "Content-Disposition", "value": "attachment; filename=\"manifest.json\"" }
+      ]
+    },
+    {
+      "source": "/bg.js",
+      "headers": [
+        { "key": "Content-Disposition", "value": "attachment; filename=\"bg.js\"" }
+      ]
+    }
+  ]
+}

